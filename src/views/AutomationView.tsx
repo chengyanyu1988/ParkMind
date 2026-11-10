@@ -162,16 +162,37 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
     { id: 'sf-8', name: '研发大厦裙楼送风机08', freq: 48.0, pressure: 260, power: true },
   ]);
 
-  // 8 Exhaust Fans
+  // Exhaust Fan Filter States
+  const [efSearchText, setEfSearchText] = useState<string>('');
+  const [efZoneFilter, setEfZoneFilter] = useState<string>('全部');
+  const [efStatusFilter, setEfStatusFilter] = useState<string>('全部');
+
+  // 24 Exhaust Fans (排风机与消防排烟机组全覆盖)
   const [exhaustFans, setExhaustFans] = useState([
-    { id: 'ef-1', name: 'A区地下车库排风机01', freq: 48.0, status: '运行', power: true },
-    { id: 'ef-2', name: 'B区地下车库排风机02', freq: 48.0, status: '运行', power: true },
-    { id: 'ef-3', name: 'C区地下车库排风机03', freq: 50.0, status: '运行', power: true },
-    { id: 'ef-4', name: '1号楼屋顶主排风机04', freq: 55.0, status: '运行', power: true },
-    { id: 'ef-5', name: '2号楼屋顶主排风机05', freq: 52.5, status: '运行', power: true },
-    { id: 'ef-6', name: '3号楼屋顶主排风机06', freq: 54.0, status: '运行', power: true },
-    { id: 'ef-7', name: '地下消防排烟风机07', freq: 50.0, status: '待机', power: false },
-    { id: 'ef-8', name: '园区餐厅油烟排风机08', freq: 46.0, status: '运行', power: true },
+    { id: 'ef-01', code: 'B00_F01_EF_0001', name: 'A区地下车库平时排风机01', zone: '地下车库', location: 'B1层A区停车场', freq: 48.0, airVolume: '12,500 m³/h', temp: 24.2, status: '运行', mode: 'BAS全自动', power: true },
+    { id: 'ef-02', code: 'B00_F01_EF_0002', name: 'B区地下车库平时排风机02', zone: '地下车库', location: 'B1层B区停车场', freq: 48.5, airVolume: '12,800 m³/h', temp: 24.5, status: '运行', mode: 'BAS全自动', power: true },
+    { id: 'ef-03', code: 'B00_F02_EF_0003', name: 'C区地下车库平时排风机03', zone: '地下车库', location: 'B2层C区停车场', freq: 50.0, airVolume: '13,200 m³/h', temp: 25.1, status: '运行', mode: 'BAS全自动', power: true },
+    { id: 'ef-04', code: 'B00_F02_EF_0004', name: 'D区地下车库防爆排风机04', zone: '地下车库', location: 'B2层D区充电桩专区', freq: 46.5, airVolume: '11,800 m³/h', temp: 26.0, status: '运行', mode: 'CO浓度联动', power: true },
+    { id: 'ef-05', code: 'B01_RF_EF_0005', name: '1号楼屋顶主排风机05', zone: '1号楼', location: '1号楼屋顶机房房顶', freq: 55.0, airVolume: '18,500 m³/h', temp: 22.8, status: '运行', mode: '负压恒定', power: true },
+    { id: 'ef-06', code: 'B01_F02_EF_0006', name: '1号楼2层办公区排风机06', zone: '1号楼', location: '1号楼2层东侧管井', freq: 45.0, airVolume: '8,600 m³/h', temp: 23.5, status: '运行', mode: '定时控制', power: true },
+    { id: 'ef-07', code: 'B01_F05_EF_0007', name: '1号楼5层高管区专用排风机07', zone: '1号楼', location: '1号楼5层西侧管井', freq: 42.0, airVolume: '6,800 m³/h', temp: 22.1, status: '运行', mode: '温感联动', power: true },
+    { id: 'ef-08', code: 'B02_RF_EF_0008', name: '2号楼屋顶主排风机08', zone: '2号楼', location: '2号楼屋顶风机房', freq: 52.5, airVolume: '17,200 m³/h', temp: 23.0, status: '运行', mode: 'BAS全自动', power: true },
+    { id: 'ef-09', code: 'B02_F03_EF_0009', name: '2号楼3层会议中心排风机09', zone: '2号楼', location: '2号楼3层机房间', freq: 49.0, airVolume: '9,800 m³/h', temp: 24.0, status: '运行', mode: '人流感应', power: true },
+    { id: 'ef-10', code: 'B02_F08_EF_0010', name: '2号楼8层机房独立排风机10', zone: '2号楼', location: '2号楼8层数据中心', freq: 50.0, airVolume: '11,000 m³/h', temp: 21.5, status: '运行', mode: '恒温联动', power: true },
+    { id: 'ef-11', code: 'B03_RF_EF_0011', name: '3号楼屋顶主排风机11', zone: '3号楼', location: '3号楼屋顶风机房', freq: 54.0, airVolume: '18,000 m³/h', temp: 23.2, status: '运行', mode: 'BAS全自动', power: true },
+    { id: 'ef-12', code: 'B03_F04_EF_0012', name: '3号楼4层实验中心排风机12', zone: '3号楼', location: '3号楼4层实验室', freq: 47.5, airVolume: '9,200 m³/h', temp: 22.4, status: '运行', mode: '微负压控制', power: true },
+    { id: 'ef-13', code: 'B00_F01_EF_0013', name: '地下B1层主水泵房排风机13', zone: '地下车库', location: '地下B1层水泵房', freq: 48.0, airVolume: '10,500 m³/h', temp: 25.8, status: '运行', mode: '湿度联动', power: true },
+    { id: 'ef-14', code: 'B00_F02_EF_0014', name: '地下B2层变配电室排风机14', zone: '地下车库', location: '地下B2层高压配电室', freq: 50.0, airVolume: '14,000 m³/h', temp: 28.6, status: '运行', mode: '温升联动', power: true },
+    { id: 'ef-15', code: 'B00_F01_EF_0015', name: '地下B1消防排烟兼排风机15', zone: '地下车库', location: '地下B1层消防防烟分区', freq: 0.0, airVolume: '0 m³/h', temp: 20.0, status: '待机', mode: '消防联动', power: false },
+    { id: 'ef-16', code: 'B00_F02_EF_0016', name: '地下B2消防排烟排风机16', zone: '地下车库', location: '地下B2层消防防烟分区', freq: 0.0, airVolume: '0 m³/h', temp: 20.5, status: '待机', mode: '消防联动', power: false },
+    { id: 'ef-17', code: 'B04_F01_EF_0017', name: '园区中央餐厅油烟排风机17', zone: '公共与服务区', location: '餐饮中心厨房管井', freq: 46.0, airVolume: '15,500 m³/h', temp: 31.2, status: '运行', mode: '油烟净化联动', power: true },
+    { id: 'ef-18', code: 'B04_F01_EF_0018', name: '园区员工食堂次排风机18', zone: '公共与服务区', location: '餐饮中心2楼厨房', freq: 44.5, airVolume: '12,000 m³/h', temp: 29.5, status: '运行', mode: '定时排风', power: true },
+    { id: 'ef-19', code: 'B05_F01_EF_0019', name: '会展中心1层高位排风机19', zone: '公共与服务区', location: '会展大厅顶部网架', freq: 51.5, airVolume: '16,800 m³/h', temp: 24.8, status: '运行', mode: '环境CO2联动', power: true },
+    { id: 'ef-20', code: 'B05_F02_EF_0020', name: '会展中心2层多功能厅排风机20', zone: '公共与服务区', location: '会展中心2层侧墙', freq: 48.0, airVolume: '13,500 m³/h', temp: 23.9, status: '运行', mode: '活动模式', power: true },
+    { id: 'ef-21', code: 'B01_RF_EF_0021', name: '1号楼卫生间集中排风机21', zone: '1号楼', location: '1号楼屋顶副楼井', freq: 45.0, airVolume: '7,800 m³/h', temp: 22.0, status: '运行', mode: '全天候微排', power: true },
+    { id: 'ef-22', code: 'B02_RF_EF_0022', name: '2号楼卫生间集中排风机22', zone: '2号楼', location: '2号楼屋顶副楼井', freq: 45.0, airVolume: '7,600 m³/h', temp: 22.3, status: '运行', mode: '全天候微排', power: true },
+    { id: 'ef-23', code: 'B00_F02_EF_0023', name: '备用应急防爆排风机23', zone: '公共与服务区', location: '危废暂存间外侧', freq: 0.0, airVolume: '0 m³/h', temp: 19.8, status: '维护', mode: '手动备用', power: false },
+    { id: 'ef-24', code: 'B06_F01_EF_0024', name: '园区垃圾中转站除臭排风机24', zone: '公共与服务区', location: '环保处理站', freq: 50.0, airVolume: '14,500 m³/h', temp: 27.4, status: '运行', mode: '除臭离心联动', power: true },
   ]);
 
   // 10 Indoor Lighting circuits
@@ -561,43 +582,247 @@ export const AutomationView: React.FC<AutomationViewProps> = ({
             </div>
           </div>
         ) : activeSubsystem === '暖通空调' && activeTertiaryItem === '排风机' ? (
-          /* 4. 排风机 (8 Exhaust Fans) */
+          /* 4. 排风机 (24 Exhaust Fans - Comprehensive Campus Coverage) */
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <span className="w-2.5 h-2.5 bg-cyan-400 rounded-xs shadow-[0_0_8px_#22d3ee]" />
-                <span>智能排风与消防排烟风机监控 (8台全园区覆盖)</span>
-              </h3>
-              <button onClick={() => triggerToast('全部排风机群控下发成功')} className="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-bold shadow">
-                下发排风群控
-              </button>
+            {/* Top Stat Cards Bar */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="p-3.5 rounded-2xl bg-[#06122d] border border-cyan-500/40 flex items-center justify-between shadow-lg">
+                <div>
+                  <div className="text-xs text-slate-400 font-bold">全园区排风设备总数</div>
+                  <div className="text-2xl font-bold font-mono text-cyan-300 mt-1">{exhaustFans.length} <span className="text-xs font-sans text-slate-400 font-normal">台</span></div>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300">
+                  <Fan className="w-5 h-5 animate-spin" style={{ animationDuration: '3s' }} />
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-[#06122d] border border-emerald-500/40 flex items-center justify-between shadow-lg">
+                <div>
+                  <div className="text-xs text-slate-400 font-bold">正常运行中</div>
+                  <div className="text-2xl font-bold font-mono text-emerald-400 mt-1">
+                    {exhaustFans.filter(f => f.status === '运行').length} <span className="text-xs font-sans text-slate-400 font-normal">台</span>
+                  </div>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-300">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-[#06122d] border border-amber-500/40 flex items-center justify-between shadow-lg">
+                <div>
+                  <div className="text-xs text-slate-400 font-bold">待机 / 消防备用</div>
+                  <div className="text-2xl font-bold font-mono text-amber-300 mt-1">
+                    {exhaustFans.filter(f => f.status === '待机').length} <span className="text-xs font-sans text-slate-400 font-normal">台</span>
+                  </div>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300">
+                  <Clock className="w-5 h-5" />
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-[#06122d] border border-slate-700 flex items-center justify-between shadow-lg">
+                <div>
+                  <div className="text-xs text-slate-400 font-bold">检修 / 维护中</div>
+                  <div className="text-2xl font-bold font-mono text-slate-300 mt-1">
+                    {exhaustFans.filter(f => f.status === '维护').length} <span className="text-xs font-sans text-slate-400 font-normal">台</span>
+                  </div>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-600 flex items-center justify-center text-slate-400">
+                  <Sliders className="w-5 h-5" />
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-4 max-h-[calc(100vh-14rem)] overflow-y-auto pr-2">
-              {exhaustFans.map((ef, idx) => (
-                <div key={ef.id} className="bg-[#06122d] border border-cyan-500/40 rounded-2xl p-4 shadow-xl space-y-3">
-                  <div className="flex justify-between items-center border-b border-[#133063] pb-2">
-                    <h4 className="text-sm font-bold text-white truncate max-w-[140px]" title={ef.name}>{ef.name}</h4>
-                    <span className={`text-[10px] font-mono ${ef.status === '运行' ? 'text-emerald-400' : 'text-amber-400'}`}>{ef.status}</span>
+            {/* Filter Toolbar & Search Bar */}
+            <div className="bg-[#06122d] border border-cyan-500/40 rounded-2xl p-4 space-y-3 shadow-xl">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-3">
+                  {/* Search Input */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={efSearchText}
+                      onChange={(e) => setEfSearchText(e.target.value)}
+                      placeholder="搜索风机名称/编号/位置..."
+                      className="w-56 px-3 py-1.5 pl-8 rounded-xl bg-[#030a1c] border border-[#1b448a] text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 font-sans"
+                    />
+                    <Fan className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
                   </div>
-                  <div className="space-y-1.5 text-xs font-mono">
-                    <div className="flex justify-between text-slate-300">
-                      <span className="font-sans">转速频率:</span>
-                      <span className="text-cyan-300 font-bold">{ef.freq} Hz</span>
-                    </div>
-                    <div className="flex justify-between text-slate-300">
-                      <span className="font-sans">联控模式:</span>
-                      <span className="text-cyan-300 font-bold">BAS全自动</span>
-                    </div>
+
+                  {/* Zone Filter dropdown */}
+                  <div className="flex items-center gap-1.5 text-xs text-slate-300">
+                    <span className="font-bold text-slate-400">区域:</span>
+                    <select
+                      value={efZoneFilter}
+                      onChange={(e) => setEfZoneFilter(e.target.value)}
+                      className="px-3 py-1.5 rounded-xl bg-[#030a1c] border border-[#1b448a] text-cyan-300 font-bold text-xs focus:outline-none focus:border-cyan-400 cursor-pointer"
+                    >
+                      <option value="全部">全部区域 (24台)</option>
+                      <option value="1号楼">1号楼</option>
+                      <option value="2号楼">2号楼</option>
+                      <option value="3号楼">3号楼</option>
+                      <option value="地下车库">地下车库</option>
+                      <option value="公共与服务区">公共与服务区</option>
+                    </select>
                   </div>
+
+                  {/* Status Filter dropdown */}
+                  <div className="flex items-center gap-1.5 text-xs text-slate-300">
+                    <span className="font-bold text-slate-400">状态:</span>
+                    <select
+                      value={efStatusFilter}
+                      onChange={(e) => setEfStatusFilter(e.target.value)}
+                      className="px-3 py-1.5 rounded-xl bg-[#030a1c] border border-[#1b448a] text-cyan-300 font-bold text-xs focus:outline-none focus:border-cyan-400 cursor-pointer"
+                    >
+                      <option value="全部">全部状态</option>
+                      <option value="运行">仅看运行中</option>
+                      <option value="待机">仅看待机</option>
+                      <option value="维护">仅看维护</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Batch Action Buttons */}
+                <div className="flex items-center gap-2">
                   <button
-                    onClick={() => triggerToast(`${ef.name}：排风控制指令已发送`)}
-                    className="w-full py-1.5 bg-[#062454] hover:bg-[#0a3374] text-cyan-300 border border-cyan-500/60 rounded-xl text-xs font-bold transition-all"
+                    onClick={() => {
+                      setExhaustFans(prev => prev.map(f => f.status !== '维护' ? { ...f, power: true, status: '运行', freq: f.freq === 0 ? 50.0 : f.freq } : f));
+                      triggerToast('已批量开启全区排风风机');
+                    }}
+                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow cursor-pointer transition-all flex items-center gap-1"
                   >
-                    风机启停设定
+                    <Play className="w-3.5 h-3.5 fill-white" />
+                    <span>一键开启</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setExhaustFans(prev => prev.map(f => ({ ...f, power: false, status: '待机', freq: 0.0 })));
+                      triggerToast('已一键安全停用全区排风');
+                    }}
+                    className="px-3 py-1.5 bg-amber-700 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow cursor-pointer transition-all flex items-center gap-1"
+                  >
+                    <Power className="w-3.5 h-3.5" />
+                    <span>一键全停</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setExhaustFans(prev => prev.map(f => f.status !== '维护' ? { ...f, power: true, status: '运行', freq: 50.0 } : f));
+                      triggerToast('已一键下发 50Hz 强排风组指令');
+                    }}
+                    className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold shadow cursor-pointer transition-all"
+                  >
+                    一键强排 (50Hz)
                   </button>
                 </div>
-              ))}
+              </div>
+            </div>
+
+            {/* Grid Container for 24 Exhaust Fans */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-h-[calc(100vh-17.5rem)] overflow-y-auto pr-2">
+              {exhaustFans
+                .filter(ef => {
+                  const matchSearch = !efSearchText || ef.name.includes(efSearchText) || ef.code.includes(efSearchText) || ef.location.includes(efSearchText);
+                  const matchZone = efZoneFilter === '全部' || ef.zone === efZoneFilter;
+                  const matchStatus = efStatusFilter === '全部' || ef.status === efStatusFilter;
+                  return matchSearch && matchZone && matchStatus;
+                })
+                .map((ef) => (
+                  <div key={ef.id} className={`bg-[#06122d] border rounded-2xl p-4 shadow-xl space-y-3 transition-all ${ef.power ? 'border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.15)]' : 'border-[#133063] opacity-85'}`}>
+                    {/* Header */}
+                    <div className="flex justify-between items-start border-b border-[#133063] pb-2.5">
+                      <div>
+                        <h4 className="text-xs font-bold text-white leading-snug truncate max-w-[150px]" title={ef.name}>{ef.name}</h4>
+                        <div className="text-[10px] font-mono text-cyan-400/80 mt-0.5">{ef.code}</div>
+                      </div>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold border flex items-center gap-1 ${
+                        ef.status === '运行' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' :
+                        ef.status === '待机' ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' :
+                        'bg-slate-700/50 text-slate-300 border-slate-600'
+                      }`}>
+                        {ef.status === '运行' && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />}
+                        {ef.status}
+                      </span>
+                    </div>
+
+                    {/* Details */}
+                    <div className="space-y-2 text-xs font-mono">
+                      <div className="flex justify-between text-slate-400">
+                        <span className="font-sans">位置:</span>
+                        <span className="text-slate-200 font-sans truncate max-w-[130px]" title={ef.location}>{ef.location}</span>
+                      </div>
+
+                      {/* Frequency Adjustment Slider */}
+                      <div className="space-y-1 bg-[#030a1c] p-2 rounded-xl border border-[#133063]">
+                        <div className="flex justify-between text-slate-300">
+                          <span className="font-sans text-[11px]">变频频率:</span>
+                          <span className="text-cyan-300 font-bold text-[11px]">{ef.freq.toFixed(1)} Hz</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="60"
+                          step="0.5"
+                          value={ef.freq}
+                          disabled={!ef.power}
+                          onChange={(e) => {
+                            const newFreq = parseFloat(e.target.value);
+                            setExhaustFans(prev => prev.map(item => item.id === ef.id ? { ...item, freq: newFreq } : item));
+                          }}
+                          className="w-full accent-cyan-400 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                        />
+                      </div>
+
+                      <div className="flex justify-between text-slate-300">
+                        <span className="font-sans">风量 / 温度:</span>
+                        <span className="text-slate-200">{ef.airVolume} · <span className="text-cyan-300">{ef.temp}℃</span></span>
+                      </div>
+
+                      <div className="flex justify-between text-slate-300">
+                        <span className="font-sans">控制模式:</span>
+                        <span className="text-cyan-300 font-bold">{ef.mode}</span>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        onClick={() => {
+                          const nextPower = !ef.power;
+                          setExhaustFans(prev => prev.map(item => {
+                            if (item.id === ef.id) {
+                              return {
+                                ...item,
+                                power: nextPower,
+                                status: nextPower ? '运行' : '待机',
+                                freq: nextPower ? (item.freq === 0 ? 50.0 : item.freq) : 0.0
+                              };
+                            }
+                            return item;
+                          }));
+                          triggerToast(`${ef.name} 已${nextPower ? '开启运行' : '关机待机'}`);
+                        }}
+                        className={`flex-1 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center justify-center gap-1 cursor-pointer ${
+                          ef.power
+                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
+                            : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+                        }`}
+                      >
+                        <Power className="w-3.5 h-3.5" />
+                        <span>{ef.power ? '运行中' : '点击开启'}</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setExhaustFans(prev => prev.map(item => item.id === ef.id ? { ...item, power: true, status: '运行', freq: 50.0 } : item));
+                          triggerToast(`${ef.name} 已设定为 50Hz 强排`);
+                        }}
+                        className="px-3 py-1.5 bg-[#062454] hover:bg-[#0a3374] text-cyan-300 border border-cyan-500/60 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
+                      >
+                        强排
+                      </button>
+                    </div>
+                  </div>
+                ))}
             </div>
           </div>
         ) : activeSubsystem === '智慧照明' && activeTertiaryItem === '室内照明' ? (
