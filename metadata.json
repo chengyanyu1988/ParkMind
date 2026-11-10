@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix Remix Remix 智慧园区IBMS智能化集成系统",
+  "description": "智慧园区与智慧楼宇IBMS智能化集成管理系统原型平台，涵盖数据看板、图形化控制、设备自控、设备运维、告警管理和系统管理六大核心模块。",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
